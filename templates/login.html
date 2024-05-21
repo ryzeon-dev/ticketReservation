@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<title>TickerReservation - Login</title>
+
+{% if error %}
+<h1>Error: {{ error }}</h1>
+{% endif %}
+
+<form method="post">
+    <label for="username">Username:</label>
+    <input id="username" name="username" type="text"/>
+    <br/>
+    <br/>
+
+    <label for="password">Password:</label>
+    <input id="password" name="password" type="password"/>
+    <br/>
+    <br/>
+
+    <input type="submit"/>
+</form>

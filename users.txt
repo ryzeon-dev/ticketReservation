@@ -1,0 +1,19 @@
+Charles Leclerc
+    cl16
+    FerrariChampionship
+
+Nico Rosberg
+    nr1
+    OnEqualMachinery
+
+Lewis Hamilton
+    lh44
+    8WorldChampionships
+
+Max Verstappen
+    mv33
+    IHateDutchAnthem
+
+Sebastian Vettel
+    sv5
+    EverybodyIsAFerrariFan
