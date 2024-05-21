@@ -2,7 +2,7 @@ from dao import *
 import random
 from models import User
 
-CHARS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&()*+,-./:;<=>?@[]^_`{|}~'
+CHARS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 def createNewToken():
     activeTokens = tuple(tok[0] for tok in  dbExecAndFetch('SELECT token from token;'))

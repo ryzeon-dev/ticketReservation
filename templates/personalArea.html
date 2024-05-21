@@ -4,6 +4,7 @@
 <h3>ID: {{ id }}</h3>
 <h3>Name: {{ name }}</h3>
 <h3>Username: {{ username }}</h3>
+
 {% if token %}
 <h3>Token: {{ token }}</h3>
 {% else %}
@@ -12,4 +13,20 @@
     <input type="hidden" value="true" name="ask-for-token" />
     <input type="submit" value="Request Token" />
 </form>
+{% endif %}
+
+{% if reservations %}
+
+<ul>
+{% for reservation in reservations %}
+
+<li>
+    {{ reservation.id }}
+    <ul>
+        {{ reservation. }}
+    </ul>
+</li>
+
+{% endfor %}
+</ul>
 {% endif %}

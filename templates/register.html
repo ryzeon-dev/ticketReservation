@@ -1,0 +1,26 @@
+<title>Register</title>
+
+{% if error %}
+<h3>Error: {{ error }}</h3>
+{% endif %}
+
+<form style="width: 50%; display: grid; grid-template-columns: 25% 75%" method="post">
+    <label for="name" >Name:</label>
+    <input type="text" name="name" id="name">
+
+
+    <label for="username" >Username:</label>
+    <input type="text" name="username" id="username">
+
+
+    <label for="password" >Password:</label>
+    <input type="password" name="password" id="password">
+
+
+    <label for="confirm-password" >Confirm password:</label>
+    <input type="password" name="confirm-password" id="confirm-password">
+
+
+    <input type="submit" value="Register" style="grid-column: span 2">
+
+</form>

@@ -3,11 +3,15 @@ from dao import *
 from models import *
 from loginToken import checkToken, createNewToken, registerToken, tokenFor
 from event import checkEvent, getAllEvents
-from reservation import checkReservation
-from user import checkUser, getUser
+from reservation import checkReservation, getReservationsFor
+from user import checkUser, getUser, registerUser
 from hashlib import sha256
 
 app = Flask(__name__)
+
+####################
+###### CLIENT ######
+####################
 
 @app.route('/')
 def root():
@@ -58,6 +62,46 @@ def listEvents():
     events = getAllEvents()
 
     return render_template('listEvents.html', events=events)
+
+@app.route('/register/', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        try:
+            name = request.form['name']
+        except:
+            return render_template('register.html', error='No name provided')
+
+        try:
+            username = request.form['username']
+        except:
+            return render_template('register.html', error='No username provided')
+
+        try:
+            password = request.form['password']
+        except:
+            return render_template('register.html', error='No password provided')
+
+        try:
+            passwordConfirmation = request.form['confirm-password']
+        except:
+            return render_template('register.html', error='No passowrd confirmation provided')
+
+        if password != passwordConfirmation:
+            return render_template('register.html', error='Password and confirmation are different')
+
+        if getUser(username):
+            return render_template('register.html', error=f'User "{username}" already exists')
+
+        registerUser(name, username, password)
+
+        return render_template('goToHome.html', message='Account created succesfully')
+
+    else:
+        return render_template('register.html', error=None)
+
+#################
+###### API ######
+#################
 
 @app.route('/api/list-events/<fromDate>&<toDate>')
 @app.route('/api/list-events/')
@@ -148,6 +192,7 @@ def checkReservationAPI(token, reservationID):
 
 @app.route('/api/list-reservations/token=<token>/')
 def listReservationsAPI(token):
+    print(token)
     user = checkToken(token)
     if user is None:
         return {
@@ -155,5 +200,15 @@ def listReservationsAPI(token):
             'reason' : 'nouser associated to token'
         }
 
+    reservations = getReservationsFor(user.id)
+    if reservations is None:
+        reservations = []
+
+    return {
+        'user-id' : user.id,
+        'reservations' : [
+            reservation.id for reservation in reservations
+        ]
+    }
 
 app.run(host='0.0.0.0', port=35275, debug=True)
