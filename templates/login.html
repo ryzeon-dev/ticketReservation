@@ -1,5 +1,65 @@
 <!DOCTYPE html>
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet">
+</head>
 <title>TickerReservation - Login</title>
+<style>
+    body {
+        background-color: #242627;
+        color: #FFFFFF;
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+        align-items: center;
+        font-family: "JetBrains Mono", monospace;
+        font-optical-sizing: auto;
+        font-weight: 400;
+        font-style: normal;
+    }
+
+    h1 {
+        color: #FF757F;
+    }
+
+    .submit {
+        background-color: #16A085;
+        border: 0;
+        border-radius: 10px;
+        color: white;
+        padding: 5px 15px;
+        width: 100%;
+    }
+
+    .submit:hover {
+        background-color: #138C74;
+    }
+
+    input {
+        background-color: #242627;
+        border: solid 2px #16A085;
+        border-radius: 10px;
+        color: #FFFFFF;
+        padding: 5px;
+        margin: 5px;
+    }
+
+    .link {
+        background-color: #16A085;
+        border: 0;
+        border-radius: 10px;
+        color: white;
+        padding: 5px 15px;
+        text-decoration: none;
+    }
+
+    .link:hover {
+        background-color: #138C74;
+        text-decoration: underline;
+    }
+
+</style>
 
 {% if error %}
 <h1>Error: {{ error }}</h1>
@@ -16,7 +76,7 @@
     <br/>
     <br/>
 
-    <input type="submit"/>
+    <input class="submit" type="submit" value="Login"/>
 </form>
-
-<a href="/register/">Register</a>
+<br/>
+<a class="link" href="/register/">Register</a>

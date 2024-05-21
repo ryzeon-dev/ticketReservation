@@ -3,10 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <title>TicketReservation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet">
+
 </head>
-<body>
-    <a href="/login"><strong>Login</strong></a>
-    <br/>
-    <a href="/list-events"><strong>Events</strong></a>
+<style>
+    body {
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+        align-items: center;
+        background-color: #242627;
+        font-family: "JetBrains Mono", monospace;
+        font-optical-sizing: auto;
+        font-weight: 400;
+        font-style: normal;
+    }
+
+    .link {
+        color: white;
+        background-color: #16A085;
+        padding: 7px 30px;
+        border-radius: 10px;
+        text-decoration: none;
+        margin-bottom: 10px;
+    }
+
+    .link:hover {
+        background-color: #138C74;
+        text-decoration: underline;
+    }
+</style>
+
+<body style="">
+    <a class="link" href="/login"><strong>Login</strong></a>
+    <a class="link" href="/list-events"><strong>Events</strong></a>
 </body>
 </html>

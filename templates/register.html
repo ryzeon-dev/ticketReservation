@@ -1,10 +1,62 @@
 <title>Register</title>
 
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet">
+</head>
+
+<style>
+    body {
+        background-color: #242627;
+        color: #FFFFFF;
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+        align-items: center;
+        font-family: "JetBrains Mono", monospace;
+        font-optical-sizing: auto;
+        font-weight: 400;
+        font-style: normal;
+    }
+
+    label {
+        color: #16A085;
+        font-size: 20px;
+    }
+
+    h3 {
+        color: #FF757F;
+    }
+
+    input {
+        background-color: #242627;
+        border: solid 2px #16A085;
+        border-radius: 10px;
+        color: #FFFFFF;
+        padding: 5px;
+        margin: 5px;
+    }
+
+    .submit {
+        background-color: #16A085;
+        border: 0;
+        border-radius: 10px;
+        color: white;
+        padding: 5px 15px;
+        margin-top: 10px;
+    }
+
+    .submit:hover {
+        background-color: #138C74;
+    }
+</style>
+
 {% if error %}
 <h3>Error: {{ error }}</h3>
 {% endif %}
 
-<form style="width: 50%; display: grid; grid-template-columns: 25% 75%" method="post">
+<form style="width: 50%; display: grid; grid-template-columns: 30% 70%" method="post">
     <label for="name" >Name:</label>
     <input type="text" name="name" id="name">
 
@@ -20,7 +72,6 @@
     <label for="confirm-password" >Confirm password:</label>
     <input type="password" name="confirm-password" id="confirm-password">
 
-
-    <input type="submit" value="Register" style="grid-column: span 2">
+    <input class="submit" type="submit" value="Register" style="grid-column: span 2">
 
 </form>
