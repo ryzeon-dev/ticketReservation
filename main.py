@@ -7,6 +7,7 @@ from reservation import checkReservation, getReservationsFor, getPrettyReservati
 from user import checkUser, getUser, registerUser
 from hashlib import sha256
 
+PORT = 80 #35275
 app = Flask(__name__)
 
 ####################
@@ -215,4 +216,4 @@ def listReservationsAPI(token):
         ]
     }
 
-app.run(host='0.0.0.0', port=35275, debug=True)
+app.run(host='0.0.0.0', port=PORT)
