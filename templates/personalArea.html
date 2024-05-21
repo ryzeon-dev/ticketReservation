@@ -17,13 +17,18 @@
 
 {% if reservations %}
 
+<h3>Reservations:</h3>
+
 <ul>
 {% for reservation in reservations %}
-
 <li>
     {{ reservation.id }}
     <ul>
-        {{ reservation. }}
+        <li>ID: {{ reservation.event.id }}</li>
+        <li>Title: {{ reservation.event.title }}</li>
+        <li>Description: {{ reservation.event.description }}</li>
+        <li>Price: {{ reservation.event.price }}</li>
+        <li>Date: {{ reservation.event.date.toString() }}</li>
     </ul>
 </li>
 

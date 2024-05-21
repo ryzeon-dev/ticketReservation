@@ -3,7 +3,7 @@ from dao import *
 from models import *
 from loginToken import checkToken, createNewToken, registerToken, tokenFor
 from event import checkEvent, getAllEvents
-from reservation import checkReservation, getReservationsFor
+from reservation import checkReservation, getReservationsFor, getPrettyReservationsFor
 from user import checkUser, getUser, registerUser
 from hashlib import sha256
 
@@ -32,11 +32,13 @@ def login():
         if askingForToken:
             token = createNewToken()
             user = getUser(username)
+
             registerToken(token, user.id)
+            reservations = getPrettyReservationsFor(user.id)
 
             return render_template(
                 'personalArea.html', id=user.id, name=user.name,
-                username=user.username, token=token
+                username=user.username, token=token, reservations=reservations
             )
 
         else:
@@ -49,9 +51,11 @@ def login():
                 return render_template('login.html', error='Invalid credentials')
 
             else:
+                reservations = getPrettyReservationsFor(user.id)
+
                 return render_template(
                     'personalArea.html', id=user.id, name=user.name,
-                    username=user.username, token=tokenFor(user.id)
+                    username=user.username, token=tokenFor(user.id), reservations=reservations
                 )
 
     else:

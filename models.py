@@ -61,6 +61,11 @@ class Reservation:
         )
 
 @dataclasses.dataclass
+class ReservationPretty:
+    id: int
+    event: Event
+
+@dataclasses.dataclass
 class User:
     id: int
     name: str
