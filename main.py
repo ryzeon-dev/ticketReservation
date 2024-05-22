@@ -68,6 +68,10 @@ def listEvents():
 
     return render_template('listEvents.html', events=events)
 
+@app.route('/api-calls/')
+def apiCalls():
+    return render_template('apiCalls.html')
+
 @app.route('/register/', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':

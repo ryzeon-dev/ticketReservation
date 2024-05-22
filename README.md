@@ -43,3 +43,4 @@
   - registrazione
   - richiesta di token di accesso
   - mostrare tutti gli eventi disponibili 
+  - mostrare il formato delle varie chiamate API disponibili

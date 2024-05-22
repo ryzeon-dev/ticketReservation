@@ -1,33 +1,32 @@
-<!doctype html>
-<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>TicketReservation</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet">
-
 </head>
+
 <style>
     body {
+        background-color: #242627;
         display: flex;
         flex-direction: column;
         justify-content: start;
         align-items: center;
-        background-color: #242627;
         font-family: "JetBrains Mono", monospace;
         font-optical-sizing: auto;
         font-weight: 400;
         font-style: normal;
     }
 
+    h3 {
+        color: #16A085;
+    }
+
     .link {
         color: white;
         background-color: #16A085;
-        padding: 7px 30px;
+        padding: 7px;
         border-radius: 10px;
         text-decoration: none;
-        margin-bottom: 10px;
     }
 
     .link:hover {
@@ -36,9 +35,11 @@
     }
 </style>
 
-<body style="">
-    <a class="link" href="/login"><strong>Login</strong></a>
-    <a class="link" href="/list-events"><strong>Events</strong></a>
-    <a class="link" href="/api-calls"><strong>API Calls</strong></a>
-</body>
-</html>
+<title>API Calls</title>
+
+<h3>/api/list-events/</h3>
+<h3>/api/list-events/[fromDate]&[toDate]/</h3>
+<h3>/api/new-reservation/event=[event]/token=[token]/places=[places]/payment_account=[paymentAccount]/</h3>
+<h3>/api/check-reservation/token=[token]/reservation=[reservation]/</h3>
+<h3>/api/list-reservations/token=[token]/</h3>
+<h3>/api/create-event/token=[token]/title=[title]/description=[description]/price=[price]/date=[date]/places=[places]/</h3>
