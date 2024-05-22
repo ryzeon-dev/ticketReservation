@@ -60,8 +60,9 @@
         <li>ID: {{ reservation.event.id }}</li>
         <li>Title: {{ reservation.event.title }}</li>
         <li>Description: {{ reservation.event.description }}</li>
-        <li>Price: {{ reservation.event.price }}</li>
+        <li>Price: {{ reservation.event.price * reservation.places }} €</li>
         <li>Date: {{ reservation.event.date.toString() }}</li>
+        <li>Places: {{ reservation.places }}</li>
     </ul>
 </li>
 

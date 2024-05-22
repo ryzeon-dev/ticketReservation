@@ -132,8 +132,8 @@ def listEventsAPI(fromDate=None, toDate=None):
         'events' : [Event.fromRow(row).toJson() for row in events]
     }
 
-@app.route('/api/new-reservation/event=<event>/token=<token>/payment_account=<paymentAccount>')
-def makeReservationAPI(token, event, paymentAccount):
+@app.route('/api/new-reservation/event=<event>/token=<token>/places=<places>/payment_account=<paymentAccount>')
+def makeReservationAPI(token, event, places, paymentAccount):
     user = checkToken(token)
     if user is None:
         return {
@@ -148,11 +148,19 @@ def makeReservationAPI(token, event, paymentAccount):
             'reason' : 'event does not exist'
         }
 
+    if int(places) > event.placesLeft:
+        return {
+            'status' : 'error',
+            'reason' : 'not enough places left'
+        }
+
     db = DB()
-    db.exec(f"insert into reservation (event, user) values ({event.id}, {user.id})")
+    db.exec(f"insert into reservation (event, user, places) values ({event.id}, {user.id}, {places})")
+
+    db.exec(f"update event set places_left={event.placesLeft - int(places)} where event.id={event.id};")
     reservationId = db.exec(f"select id from reservation where event={event.id} and user={user.id}")[0][0]
 
-    db.exec(f"insert into payment (reservation, account, price) values ({reservationId}, '{paymentAccount}', {event.price});")
+    db.exec(f"insert into payment (reservation, account, price) values ({reservationId}, '{paymentAccount}', {event.price * int(places)});")
     db.close()
 
     return {
@@ -191,7 +199,8 @@ def checkReservationAPI(token, reservationID):
             'id' : reservation.id,
             'user' : user.toJson(),
             'event' : event.toJson(),
-            'payment_account' : paymentAccount
+            'payment_account' : paymentAccount,
+            'places' : reservation.places
         }
     }
 
@@ -214,6 +223,34 @@ def listReservationsAPI(token):
         'reservations' : [
             reservation.id for reservation in reservations
         ]
+    }
+
+@app.route('/api/create-event/token=<token>/title=<title>/description=<description>/price=<price>/date=<date>/places=<places>/')
+def createEventAPI(token, title, description, price, date, places):
+    user = checkToken(token)
+    if user is None:
+        return {
+            'status': 'error',
+            'reason': 'no user associated to token'
+        }
+
+    if not user.admin:
+        return {
+            'status': 'error',
+            'reason': 'user has not the privilegies to create an event'
+        }
+
+    if '/' in date:
+        date = '-'.join(date.split('/')[::-1])
+
+    db = DB()
+    db.exec(f"insert into event (title, description, event_date, price, places, places_left) values ('{title}', '{description}', '{date}', {price}, {places}, {places})")
+    id = db.exec(f"select id from event where title='{title}' and event_date='{date}'")[0][0]
+    db.close()
+
+    return {
+        'status' : 'ok',
+        'event-id' : id
     }
 
 if __name__ == '__main__':

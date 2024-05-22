@@ -14,7 +14,7 @@ def getReservationsFor(id):
         return ( Reservation.fromRow(row) for row in reservationData )
 
 def getPrettyReservationsFor(id):
-    reservationData = dbExecAndFetch(f"select r.id, e.* from reservation r join event e on r.event = e.id  where user={id}")
+    reservationData = dbExecAndFetch(f"select r.id, r.places, e.* from reservation r join event e on r.event = e.id  where user={id}")
 
     if reservationData:
         reservations = []
@@ -23,7 +23,8 @@ def getPrettyReservationsFor(id):
             reservations.append(
                 ReservationPretty(
                     id=row[0],
-                    event=Event.fromRow(row[1:])
+                    places=row[1],
+                    event=Event.fromRow(row[2:])
                 )
             )
 

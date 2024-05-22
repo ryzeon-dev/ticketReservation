@@ -26,6 +26,8 @@ class Event:
     description: str
     price: float
     date: Date
+    places: int
+    placesLeft: int
 
     @staticmethod
     def fromRow(row):
@@ -34,7 +36,9 @@ class Event:
             title=row[1],
             description=row[2],
             price=row[4],
-            date=Date.fromString(row[3])
+            date=Date.fromString(row[3]),
+            places=row[5],
+            placesLeft=row[6]
         )
 
     def toJson(self):
@@ -43,7 +47,9 @@ class Event:
             'title' : self.title,
             'description': self.description,
             'date' : self.date.toString(),
-            'price' : self.price
+            'price' : self.price,
+            'places' : self.places,
+            'places-left': self.placesLeft
         }
 
 @dataclasses.dataclass
@@ -51,18 +57,21 @@ class Reservation:
     id: int
     event: int
     user: int
+    places: int
 
     @staticmethod
     def fromRow(row):
         return Reservation (
             id=row[0],
             event=row[1],
-            user=row[2]
+            user=row[2],
+            places=row[3]
         )
 
 @dataclasses.dataclass
 class ReservationPretty:
     id: int
+    places: int
     event: Event
 
 @dataclasses.dataclass
@@ -71,6 +80,7 @@ class User:
     name: str
     username: str
     password: str
+    admin: bool
     reservations: list = dataclasses.field(default_factory=lambda: [])
     token: str = None
 
@@ -80,7 +90,8 @@ class User:
             id=row[0],
             name=row[1],
             username=row[2],
-            password=row[3]
+            password=row[3],
+            admin=row[4]
         )
 
     def setToken(self, token):

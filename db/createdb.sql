@@ -3,14 +3,17 @@ create table event (
     title TEXT,
     description TEXT,
     event_date TEXT,
-    price FLOAT
+    price FLOAT,
+    places INTEGER,
+    places_left INTEGER
 );
 
 create table user (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT,
     username TEXT,
-    password TEXT
+    password TEXT,
+    admin BOOL
 );
 
 create table token (
@@ -22,7 +25,8 @@ create table token (
 create table reservation (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     event INTEGER,
-    user INTEGER
+    user INTEGER,
+    places INTEGER
 );
 
 create table payment (
