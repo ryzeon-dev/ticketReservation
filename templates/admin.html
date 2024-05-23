@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+
+
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet">
+</head>
+
+<title>Admin Page</title>
+<style>
+    body {
+        background-color: #242627;
+        color: #16A085;
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+        align-items: center;
+        font-family: "JetBrains Mono", monospace;
+        font-optical-sizing: auto;
+        font-weight: 400;
+        font-style: normal;
+    }
+
+    input {
+        background-color: #242627;
+        border: solid 2px #16A085;
+        border-radius: 10px;
+        color: #FFFFFF;
+        padding: 5px;
+        margin: 5px;
+    }
+
+    .submit {
+        background-color: #16A085;
+        border: 0;
+        border-radius: 10px;
+        color: white;
+        padding: 5px 15px;
+        width: 100%;
+    }
+
+    .submit:hover {
+        background-color: #138C74;
+    }
+</style>
+
+<h3>ID: {{ id }}</h3>
+<h3>Name: {{ name }}</h3>
+<h3>Username: {{ username }}</h3>
+
+{% if token %}
+<h3>Token: {{ token }}</h3>
+{% endif %}
+
+<h3>Toggle admin privilegies</h3>
+<form name="toggle-admin" method="post">
+    <label for="userID">User ID:</label>
+    <input name="toggle-admin" id="userID" type="1234567890">
+    <input type="hidden" name="username" value="{{ adminUsername }}" />
+    <input type="hidden" name="password" value="{{ adminPassword }}" />
+    <br/>
+
+    <input class="submit" type="submit" value="Toggle" />
+</form>
+
+<form method="post">
+    <input type="hidden" name="list-users" value="true" />
+    <input type="hidden" name="username" value="{{ adminUsername }}" />
+    <input type="hidden" name="password" value="{{ adminPassword }}" />
+    <input class="submit" type="submit" value="List users" />
+</form>
+
+{% if users %}
+
+<ul>
+    {% for user in users %}
+
+    <li>
+        {{ user.id }}
+        <br/>
+        <ul>
+            <li>Name: {{ user.name }}</li>
+            <li>Username: {{ user.username }}</li>
+            <li>Admin: {{ "true" if user.admin else "false" }}</li>
+        </ul>
+    </li>
+
+    {% endfor %}
+
+</ul>
+
+{% endif %}

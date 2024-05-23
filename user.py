@@ -24,3 +24,15 @@ def registerUser(name, username, password):
     db = DB()
     db.exec(f"insert into user (name, username, password) values ('{name}', '{username}', '{passwordHash}');")
     db.close()
+
+def getUserBy(id):
+    user = dbExecAndFetch(f'select * from user where id={id}')
+
+    if user:
+        return User.fromRow(user[0])
+
+def listUsers():
+    users = dbExecAndFetch('select * from user;')
+
+    if users:
+        return (User.fromRow(row) for row in users)

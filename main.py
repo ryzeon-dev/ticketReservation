@@ -1,10 +1,11 @@
+import time
 from flask import Flask, request, render_template, redirect
 from dao import *
 from models import *
 from loginToken import checkToken, createNewToken, registerToken, tokenFor
 from event import checkEvent, getAllEvents
 from reservation import checkReservation, getReservationsFor, getPrettyReservationsFor
-from user import checkUser, getUser, registerUser
+from user import checkUser, getUser, registerUser, listUsers, getUserBy
 from hashlib import sha256
 
 PORT = 80 #35275
@@ -61,6 +62,65 @@ def login():
 
     else:
         return render_template('login.html', error=None)
+
+@app.route('/admin/', methods=['GET', 'POST'])
+def admin():
+    if request.method == 'POST':
+        username = request.form['username']
+        password =  request.form['password']
+
+        hashing = sha256()
+        hashing.update(password.encode())
+        passwdHash = hashing.hexdigest()
+
+        user = checkUser(username, passwdHash)
+        if user is None:
+            return render_template('login.html', error='Invalid credentials')
+
+        if user.username != 'master' and not user.admin:
+            return render_template('login.html', error='access denied, unauthorized user')
+
+        try:
+            request.form['list-users']
+
+        except:
+            pass
+
+        else:
+            users = listUsers()
+            return render_template(
+                'admin.html', id=user.id, name=user.name,
+                username=user.username, token=tokenFor(user.id), users=users,
+                adminUsername='master', adminPassword='admin'
+            )
+
+        try:
+            toggleAdmin = request.form['toggle-admin']
+
+        except:
+            pass
+
+        else:
+            user = getUserBy(toggleAdmin)
+
+            db = DB()
+            db.exec(f'update user set admin={"FALSE" if user.admin else "TRUE"} where id={toggleAdmin};')
+            db.close()
+
+            return render_template(
+                'admin.html', id=user.id, name=user.name,
+                username=user.username, token=tokenFor(user.id),
+                adminUsername='master', adminPassword='admin'
+            )
+
+        return render_template(
+            'admin.html', id=user.id, name=user.name,
+            username=user.username, token=tokenFor(user.id),
+            adminUsername='master', adminPassword='admin'
+        )
+
+
+    return render_template('login.html')
 
 @app.route('/list-events/')
 def listEvents():
@@ -150,6 +210,15 @@ def makeReservationAPI(token, event, places, paymentAccount):
         return {
             'status' : 'error',
             'reason' : 'event does not exist'
+        }
+
+    now = time.gmtime()
+    if event.date.year < now.tm_year or \
+        (event.date.year == now.tm_year and event.date.month < now.tm_mon) or \
+         (event.date.year == now.tm_year and event.date.month == now.tm_mon and event.date.day < now.tm_mday):
+        return {
+            'status': 'error',
+            'reason': 'cannot make reservation for a past event'
         }
 
     if int(places) > event.placesLeft:
