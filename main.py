@@ -1,11 +1,11 @@
 import time
 from flask import Flask, request, render_template, redirect
-from dao import *
+from dbd import *
 from models import *
-from loginToken import checkToken, createNewToken, registerToken, tokenFor
-from event import checkEvent, getAllEvents
-from reservation import checkReservation, getReservationsFor, getPrettyReservationsFor
-from user import checkUser, getUser, registerUser, listUsers, getUserBy
+from loginToken import *
+from event import *
+from reservation import *
+from user import *
 from hashlib import sha256
 
 PORT = 80 #35275
@@ -50,7 +50,7 @@ def login():
 
             user = checkUser(username, passwdHash)
             if user is None:
-                return render_template('login.html', error='Invalid credentials')
+                return render_template('login.html', register=True, error='Invalid credentials')
 
             else:
                 reservations = getPrettyReservationsFor(user.id)
@@ -61,7 +61,7 @@ def login():
                 )
 
     else:
-        return render_template('login.html', error=None)
+        return render_template('login.html', register=True, error=None)
 
 @app.route('/admin/', methods=['GET', 'POST'])
 def admin():
@@ -172,8 +172,8 @@ def register():
 ###### API ######
 #################
 
-@app.route('/api/list-events/<fromDate>&<toDate>')
-@app.route('/api/list-events/')
+@app.route('/api/list-events/<fromDate>&<toDate>', methods=['GET', 'POST'])
+@app.route('/api/list-events/', methods=['GET', 'POST'])
 def listEventsAPI(fromDate=None, toDate=None):
     if fromDate is None and toDate is None:
         query = f"SELECT * from event;"
@@ -196,8 +196,15 @@ def listEventsAPI(fromDate=None, toDate=None):
         'events' : [Event.fromRow(row).toJson() for row in events]
     }
 
-@app.route('/api/new-reservation/event=<event>/token=<token>/places=<places>/payment_account=<paymentAccount>')
-def makeReservationAPI(token, event, places, paymentAccount):
+@app.route('/api/new-reservation/', methods=['POST'])
+def makeReservationAPI():
+    if request.method != 'POST':
+        return {
+            'status' : 'error',
+            'reason' : 'get requests are not allowed'
+        }
+
+    token = request.form['token']
     user = checkToken(token)
     if user is None:
         return {
@@ -205,7 +212,8 @@ def makeReservationAPI(token, event, places, paymentAccount):
             'reason' : 'no user associated to token'
         }
 
-    event = checkEvent(event)
+    event = checkEvent(request.form['event'])
+    print(event)
     if event is None:
         return {
             'status' : 'error',
@@ -221,11 +229,14 @@ def makeReservationAPI(token, event, places, paymentAccount):
             'reason': 'cannot make reservation for a past event'
         }
 
-    if int(places) > event.placesLeft:
+    places = int(request.form['places'])
+    if places > event.placesLeft:
         return {
             'status' : 'error',
             'reason' : 'not enough places left'
         }
+
+    paymentAccount = request.form['payment-account']
 
     db = DB()
     db.exec(f"insert into reservation (event, user, places) values ({event.id}, {user.id}, {places})")
@@ -241,8 +252,9 @@ def makeReservationAPI(token, event, places, paymentAccount):
         'reservation-id' : reservationId
     }
 
-@app.route('/api/check-reservation/token=<token>/reservation=<reservationID>')
-def checkReservationAPI(token, reservationID):
+@app.route('/api/check-reservation/', methods=['POST'])
+def checkReservationAPI():
+    token = request.form['token']
     user = checkToken(token)
     if user is None:
         return {
@@ -250,6 +262,7 @@ def checkReservationAPI(token, reservationID):
             'reason' : 'no user associated to token'
         }
 
+    reservationID = request.form['reservation-id']
     reservation = checkReservation(reservationID)
     if reservation is None:
         return {
@@ -277,9 +290,9 @@ def checkReservationAPI(token, reservationID):
         }
     }
 
-@app.route('/api/list-reservations/token=<token>/')
-def listReservationsAPI(token):
-    print(token)
+@app.route('/api/list-reservations/', methods=['POST'])
+def listReservationsAPI():
+    token = request.form['token']
     user = checkToken(token)
     if user is None:
         return {
@@ -298,8 +311,9 @@ def listReservationsAPI(token):
         ]
     }
 
-@app.route('/api/create-event/token=<token>/title=<title>/description=<description>/price=<price>/date=<date>/places=<places>/')
-def createEventAPI(token, title, description, price, date, places):
+@app.route('/api/create-event/', methods=['POST'])
+def createEventAPI():
+    token = request.form['token']
     user = checkToken(token)
     if user is None:
         return {
@@ -313,8 +327,12 @@ def createEventAPI(token, title, description, price, date, places):
             'reason': 'user has not the privilegies to create an event'
         }
 
-    if '/' in date:
-        date = '-'.join(date.split('/')[::-1])
+    title = request.form['title']
+    description = request.form['description']
+    price = request.form['price']
+
+    date = request.form['date']
+    places = request.form['places']
 
     db = DB()
     db.exec(f"insert into event (title, description, event_date, price, places, places_left) values ('{title}', '{description}', '{date}', {price}, {places}, {places})")

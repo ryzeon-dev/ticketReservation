@@ -11,9 +11,9 @@ class Date:
         chunks = date.split('-')
 
         return Date (
-            day=chunks[2],
-            month=chunks[1],
-            year=chunks[0]
+            day=int(chunks[2]),
+            month=int(chunks[1]),
+            year=int(chunks[0])
         )
 
     def toString(self):

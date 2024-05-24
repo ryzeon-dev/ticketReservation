@@ -1,4 +1,4 @@
-from dao import *
+from dbd import *
 from models import Event
 
 def checkEvent(id):
