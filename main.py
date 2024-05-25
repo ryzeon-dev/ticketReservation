@@ -119,11 +119,11 @@ def admin():
             return render_template('login.html', error='access denied, unauthorized user')
 
         try:
-            listUsers = request.form['list-users']
+            listUsersRequest = request.form['list-users']
         except:
-            listUsers = None
+            listUsersRequest = None
 
-        if listUsers:
+        if listUsersRequest:
             users = listUsers()
             return render_template(
                 'admin.html', id=user.id, name=user.name,
@@ -131,7 +131,11 @@ def admin():
                 adminUsername='master', adminPassword='admin'
             )
 
-        toggleAdmin = request.form['toggle-admin']
+        try:
+            toggleAdmin = request.form['toggle-admin']
+        except:
+            toggleAdmin = None
+
         if toggleAdmin:
             user = getUserBy(toggleAdmin)
 
