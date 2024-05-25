@@ -118,9 +118,12 @@ def admin():
         if user.username != 'master' and not user.admin:
             return render_template('login.html', error='access denied, unauthorized user')
 
-        listUsers = request.form['list-users']
-        if listUsers:
+        try:
+            listUsers = request.form['list-users']
+        except:
+            listUsers = None
 
+        if listUsers:
             users = listUsers()
             return render_template(
                 'admin.html', id=user.id, name=user.name,
@@ -147,7 +150,6 @@ def admin():
             username=user.username, token=tokenFor(user.id),
             adminUsername='master', adminPassword='admin'
         )
-
 
     return render_template('login.html')
 
