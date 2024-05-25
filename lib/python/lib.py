@@ -1,6 +1,12 @@
 import requests
 
-URL = 'https://ticketreservation-production.up.railway.app/'
+URL = 'https://ticketreservation-production.up.railway.app'
+
+def listEvents(fromDate=None, toDate=None):
+    if fromDate and toDate:
+        return requests.post(f'{URL}/api/list-events/{fromDate}&{toDate}')
+
+    return requests.post(f'{URL}/api/list-events/')
 
 def newReservation(event, token, places, paymentAccount):
     return requests.post(f'{URL}/api/new-reservation', {
@@ -22,7 +28,7 @@ def listReservations(token):
     })
 
 def createEvent(token, title, description, price, date, places):
-    return requests.post(f'{URL}/api/create-event', {
+    return requests.post(f'{URL}/api/create-event/', {
         'token' : str(token),
         'title' : str(title),
         'description' : str(description),

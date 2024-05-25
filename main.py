@@ -22,7 +22,11 @@ def root():
 
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
+    if request.method == 'GET':
+        return render_template('login.html', register=True, error=None)
+
     if request.method == 'POST':
+        print(request.form)
         username = request.form['username']
 
         try:
@@ -30,6 +34,11 @@ def login():
         except:
             askingForToken = None
             password =  request.form['password']
+
+        try:
+            createEvent = request.form['create-event']
+        except:
+            createEvent = None
 
         if askingForToken:
             token = createNewToken()
@@ -43,25 +52,54 @@ def login():
                 username=user.username, token=token, reservations=reservations
             )
 
-        else:
-            hashing = sha256()
-            hashing.update(password.encode())
-            passwdHash = hashing.hexdigest()
+        if createEvent:
+            username = request.form['username']
+            title = request.form['title']
 
-            user = checkUser(username, passwdHash)
-            if user is None:
-                return render_template('login.html', register=True, error='Invalid credentials')
+            description = request.form['description']
+            price = request.form['price']
+
+            places = request.form['places']
+            date = request.form['date']
+
+            user = getUser(username)
+            reservations = getPrettyReservationsFor(user.id)
+
+            if dbExecAndFetch(f"select * from event where title='{title}'"):
+                return render_template(
+                    'personalArea.html', id=user.id, name=user.name,
+                    username=user.username, token=tokenFor(user.id), reservations=reservations,
+                    admin=user.admin, eventMessage=f'Impossible to create event with title "{title}", it already exists'
+                )
 
             else:
-                reservations = getPrettyReservationsFor(user.id)
+                db = DB()
+                db.exec(
+                    f"insert into event (title, description, event_date, price, places, places_left) values ('{title}', '{description}', '{date}', {price}, {places}, {places})")
+                id = db.exec(f"select id from event where title='{title}' and event_date='{date}'")[0][0]
+                db.close()
 
                 return render_template(
                     'personalArea.html', id=user.id, name=user.name,
-                    username=user.username, token=tokenFor(user.id), reservations=reservations
+                    username=user.username, token=tokenFor(user.id), reservations=reservations,
+                    admin=user.admin, eventMessage=f'Event created with id "{id}"'
                 )
 
-    else:
-        return render_template('login.html', register=True, error=None)
+        hashing = sha256()
+        hashing.update(password.encode())
+        passwdHash = hashing.hexdigest()
+
+        user = checkUser(username, passwdHash)
+        if user is None:
+            return render_template('login.html', register=True, error='Invalid credentials')
+
+        else:
+            reservations = getPrettyReservationsFor(user.id)
+
+            return render_template(
+                'personalArea.html', id=user.id, name=user.name,
+                username=user.username, token=tokenFor(user.id), reservations=reservations, admin=user.admin
+            )
 
 @app.route('/admin/', methods=['GET', 'POST'])
 def admin():
@@ -80,13 +118,9 @@ def admin():
         if user.username != 'master' and not user.admin:
             return render_template('login.html', error='access denied, unauthorized user')
 
-        try:
-            request.form['list-users']
+        listUsers = request.form['list-users']
+        if listUsers:
 
-        except:
-            pass
-
-        else:
             users = listUsers()
             return render_template(
                 'admin.html', id=user.id, name=user.name,
@@ -94,13 +128,8 @@ def admin():
                 adminUsername='master', adminPassword='admin'
             )
 
-        try:
-            toggleAdmin = request.form['toggle-admin']
-
-        except:
-            pass
-
-        else:
+        toggleAdmin = request.form['toggle-admin']
+        if toggleAdmin:
             user = getUserBy(toggleAdmin)
 
             db = DB()
@@ -125,7 +154,6 @@ def admin():
 @app.route('/list-events/')
 def listEvents():
     events = getAllEvents()
-
     return render_template('listEvents.html', events=events)
 
 @app.route('/api-calls/')
@@ -135,24 +163,21 @@ def apiCalls():
 @app.route('/register/', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        try:
-            name = request.form['name']
-        except:
+
+        name = request.form['name']
+        if not name:
             return render_template('register.html', error='No name provided')
 
-        try:
-            username = request.form['username']
-        except:
+        username = request.form['username']
+        if not username:
             return render_template('register.html', error='No username provided')
 
-        try:
-            password = request.form['password']
-        except:
+        password = request.form['password']
+        if not password:
             return render_template('register.html', error='No password provided')
 
-        try:
-            passwordConfirmation = request.form['confirm-password']
-        except:
+        passwordConfirmation = request.form['confirm-password']
+        if not passwordConfirmation:
             return render_template('register.html', error='No passowrd confirmation provided')
 
         if password != passwordConfirmation:
@@ -180,6 +205,7 @@ def listEventsAPI(fromDate=None, toDate=None):
 
         events = dbExecAndFetch(query)
         return {
+            'status' : 'ok',
             'events': [Event.fromRow(row).toJson() for row in events]
         }
 
@@ -333,6 +359,12 @@ def createEventAPI():
 
     date = request.form['date']
     places = request.form['places']
+
+    if dbExecAndFetch(f"select * from event where title='{title}'"):
+        return {
+            'status' : 'error',
+            'reason' : f'event with title "{title}" already exist'
+        }
 
     db = DB()
     db.exec(f"insert into event (title, description, event_date, price, places, places_left) values ('{title}', '{description}', '{date}', {price}, {places}, {places})")

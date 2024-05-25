@@ -20,6 +20,15 @@
         font-style: normal;
     }
 
+    input {
+        background-color: #242627;
+        border: solid 2px #16A085;
+        border-radius: 10px;
+        color: #FFFFFF;
+        padding: 5px;
+        margin: 5px;
+    }
+
     .submit {
         background-color: #16A085;
         border: 0;
@@ -46,6 +55,38 @@
     <input type="hidden" value="true" name="ask-for-token" />
     <input class="submit" type="submit" value="Request Token" />
 </form>
+{% endif %}
+
+{% if admin %}
+
+{% if eventMessage %}
+<h3>{{ eventMessage }}</h3>
+{% endif %}
+
+<h3>Create new event</h3>
+<form name="create-event" method="post" style="width: 50%; display: grid; grid-template-columns: 30% 70%">
+    <input type="hidden" name="create-event" value="true"/>
+    <input type="hidden" value="{{ username }}" name="username"/>
+    <input type="hidden" value="{{ password }}" name="password"/>
+
+    <label for="title">Title:</label>
+    <input name="title" id="title">
+
+    <label for="description">Description:</label>
+    <input name="description" id="description">
+
+    <label for="price">Price:</label>
+    <input name="price" id="price">
+
+    <label for="places">Places:</label>
+    <input name="places" id="places">
+
+    <label for="date">Date:</label>
+    <input name="date" id="date">
+
+    <input type="submit" class="submit" style="grid-column: span 2;" value="Create">
+</form>
+
 {% endif %}
 
 {% if reservations %}
