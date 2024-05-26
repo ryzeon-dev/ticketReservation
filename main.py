@@ -1,6 +1,6 @@
 import time
 from flask import Flask, request, render_template, redirect
-from dbd import *
+from dbi import *
 from models import *
 from loginToken import *
 from event import *
@@ -8,7 +8,6 @@ from reservation import *
 from user import *
 from hashlib import sha256
 
-PORT = 80 #35275
 app = Flask(__name__)
 
 ####################
@@ -380,6 +379,56 @@ def createEventAPI():
     return {
         'status' : 'ok',
         'event-id' : id
+    }
+
+@app.route('/api/delete-reservation/', methods=['POST'])
+def deleteReservation():
+    token = request.form['token']
+    reservationID = request.form['reservation-id']
+
+    user = checkToken(token)
+    if user is None:
+        return {
+            'status' : 'error',
+            'reason' : 'token not associated with user'
+        }
+
+    reservation = checkReservation(reservationID)
+    if reservation is None:
+        return {
+            'status' : 'error',
+            'reason' : 'reservation ID does not exist'
+        }
+
+    if reservation.user != user.id:
+        return {
+            'status' : 'error',
+            'reason' : 'reservation is not associated with user'
+        }
+
+    event = checkEvent(reservation.event)
+    now = time.localtime()
+    if event.date.year < now.tm_year or \
+        (event.date.year == now.tm_year and event.date.month < now.tm_mon) or \
+        (event.date.year == now.tm_year and event.date.month == now.tm_mon and event.date.day < now.tm_mday):
+        return {
+            'status' : 'error',
+            'reason' : 'impossible to delete a past reservation'
+        }
+
+    paymentAccount = request.form['payment-account']
+    if not paymentAccount:
+        paymentAccount = dbExecAndFetch(f'select account from payment where reservation={reservationID};')
+
+    db = DB()
+    db.exec(f"delete from reservation where id={reservationID};")
+    db.exec(f"delete from payment where reservation={reservationID};")
+    db.exec(f"update event set places_left={event.placesLeft + reservation.places};")
+    db.close()
+
+    return {
+        'status' : 'ok',
+        'transfer-account' : paymentAccount
     }
 
 if __name__ == '__main__':

@@ -76,6 +76,26 @@ fn createEvent<T: ToString>(token: T, title: T, description: T, price: T, date: 
     return rsjson::Json::fromString(result.text().unwrap());
 }
 
+fn deleteReservation<T: ToString>(token: T, reservationID: T, paymentAccount Option<T>) -> Result<rsjson::Json, String> {
+    let mut client = Client::new();
+    let mut request = client.post(format!("{}/api/delete-reservation/", URL))
+        .form(
+        &[
+            ("token", token.to_string()),
+            ("reservation-id", reservationID.to_string()),
+            ("payment-account",
+                if paymentAccount == None {
+                    paymentAccount.unwrap()
+                } else {
+                    String::new()
+                }
+            )
+        ]
+    );
+
+    let mut result = request.send().unwrap();
+    return rsjson::Json::fromString(result.text().unwrap());
+}
 
 #[cfg(test)]
 mod tests {

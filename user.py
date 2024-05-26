@@ -1,4 +1,4 @@
-from dbd import *
+from dbi import *
 from models import User
 from hashlib import sha256
 

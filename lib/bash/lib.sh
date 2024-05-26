@@ -23,3 +23,7 @@ function createEvent {
 function newReservation {
     curl -X POST -d "event=${1}&token=${2}&places=${3}&payment-account=${4}" "${URL}/api/new-reservation/"
 }
+
+function deleteReservation {
+    curl -X POST -d "token=${1}&reservation-id=${2}&payment-account=${3}" "${URL}/api/delete-reservation/"
+}

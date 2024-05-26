@@ -36,3 +36,10 @@ def createEvent(token, title, description, price, date, places):
         'date' : str(date),
         'places' : str(places)
     })
+
+def deleteReservation(token, reservationID, paymentAccount=None):
+    return requests.post(f'{URL}/api/delete-reservation/', {
+        'token' : str(token),
+        'reservation-id' : str(reservationID),
+        'payment-account' : str(paymentAccount) if paymentAccount is not None else ''
+    })

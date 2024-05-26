@@ -1,4 +1,4 @@
-from dbd import *
+from dbi import *
 import random
 from models import User
 
