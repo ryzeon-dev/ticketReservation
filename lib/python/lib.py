@@ -1,6 +1,6 @@
 import requests
 
-URL = 'http://127.0.0.1:5000' #'https://ticketreservation-production.up.railway.app'
+URL = 'https://ticketreservation-production.up.railway.app'
 
 def listEvents(fromDate=None, toDate=None):
     if fromDate and toDate:
