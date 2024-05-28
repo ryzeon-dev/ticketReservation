@@ -7,12 +7,13 @@ class DB:
 
     def exec(self, query):
         self.cursor.execute(query)
-        self.db.commit()
-
         return self.cursor.fetchall()
 
     def close(self):
         self.db.close()
+
+    def commit(self):
+        self.db.commit()
 
 def dbExecAndFetch(query):
     db = DB()

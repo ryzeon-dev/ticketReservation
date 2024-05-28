@@ -25,7 +25,6 @@ def login():
         return render_template('login.html', register=True, error=None)
 
     if request.method == 'POST':
-        print(request.form)
         username = request.form['username']
 
         try:
@@ -244,7 +243,6 @@ def makeReservationAPI():
         }
 
     event = checkEvent(request.form['event'])
-    print(event)
     if event is None:
         return {
             'status' : 'error',
@@ -276,6 +274,7 @@ def makeReservationAPI():
     reservationId = db.exec(f"select id from reservation where event={event.id} and user={user.id}")[0][0]
 
     db.exec(f"insert into payment (reservation, account, price) values ({reservationId}, '{paymentAccount}', {event.price * int(places)});")
+    db.commit()
     db.close()
 
     return {
@@ -374,6 +373,8 @@ def createEventAPI():
     db = DB()
     db.exec(f"insert into event (title, description, event_date, price, places, places_left) values ('{title}', '{description}', '{date}', {price}, {places}, {places})")
     id = db.exec(f"select id from event where title='{title}' and event_date='{date}'")[0][0]
+
+    db.commit()
     db.close()
 
     return {
@@ -422,8 +423,11 @@ def deleteReservation():
 
     db = DB()
     db.exec(f"delete from reservation where id={reservationID};")
+
     db.exec(f"delete from payment where reservation={reservationID};")
     db.exec(f"update event set places_left={event.placesLeft + reservation.places};")
+
+    db.commit()
     db.close()
 
     return {
@@ -433,7 +437,6 @@ def deleteReservation():
 
 @app.route('/api/update-reservation/', methods=['POST'])
 def updateReservation():
-    print(request.form)
     if request.method != 'POST':
         return
 
@@ -478,9 +481,11 @@ def updateReservation():
 
     db = DB()
     db.exec(f'update reservation set places={places} where id={reservationID}')
-    db.exec(f'update event set places_left={event.placesLeft + placesDelta} where id={event.id}')
 
+    db.exec(f'update event set places_left={event.placesLeft + placesDelta} where id={event.id}')
     db.exec(f"insert into payment (reservation, account, price) values ({reservation.id}, '{paymentAccount}', {transaction});")
+
+    db.commit()
     db.close()
 
     return {
