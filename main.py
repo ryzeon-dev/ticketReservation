@@ -431,5 +431,62 @@ def deleteReservation():
         'transfer-account' : paymentAccount
     }
 
+@app.route('/api/update-reservation/', methods=['POST'])
+def updateReservation():
+    print(request.form)
+    if request.method != 'POST':
+        return
+
+    token = request.form['token']
+    user = checkToken(token)
+
+    if not user:
+        return {
+            'status' : 'error',
+            'reason' : 'token is not associated with any user'
+        }
+
+    reservationID = request.form['reservation-id']
+    reservation = checkReservation(reservationID)
+
+    if not reservation:
+        return {
+            'status' : 'error',
+            'reason' : 'reservation does not exist'
+        }
+
+    if reservation.user != user.id:
+        return {
+            'status' : 'error',
+            'reason' : 'user not allowed to edit this reservation'
+        }
+
+    places = int(request.form['places'])
+    if reservation.places == places:
+        return {
+            'status' : 'alert',
+            'problem' : 'no change applied to reservation'
+        }
+
+    event = checkEvent(reservation.event)
+
+    paymentAccount = request.form['payment-account']
+    alreadyPaid = int(dbExecAndFetch(f'select price from payment where id={reservationID}')[0][0])
+
+    transaction = - (alreadyPaid - places * event.price)
+    placesDelta = reservation.places - places
+
+    db = DB()
+    db.exec(f'update reservation set places={places} where id={reservationID}')
+    db.exec(f'update event set places_left={event.placesLeft + placesDelta} where id={event.id}')
+
+    db.exec(f"insert into payment (reservation, account, price) values ({reservation.id}, '{paymentAccount}', {transaction});")
+    db.close()
+
+    return {
+        'status' : 'ok',
+        'action' : 'reservation places changed. The transaction will have place on the provided bank account'
+    }
+
 if __name__ == '__main__':
     app.run()

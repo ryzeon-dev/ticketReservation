@@ -97,6 +97,22 @@ fn deleteReservation<T: ToString>(token: T, reservationID: T, paymentAccount Opt
     return rsjson::Json::fromString(result.text().unwrap());
 }
 
+fn updateReservation<T: ToString>(token: T, reservationID: T, places: T, paymentAccount: T) -> Result<Json, String> {
+    let mut client = Client::new();
+    let mut request = client.post(format!("{}/api/update-reservation/", URL))
+        .form(
+        &[
+            ("token", token.to_string()),
+            ("reservation-id", reservationID.to_string()),
+            ("places", places.to_string()),
+            ("payment-account", paymentAccount.to_string())
+        ]
+    );
+
+    let mut result = request.send().unwrap();
+    return rsjson::Json::fromString(result.text().unwrap());
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
