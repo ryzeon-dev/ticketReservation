@@ -122,8 +122,8 @@
     "status" pari ad "error", e "reason" pari alla ragione dell'errore 
 
 ## Lib
-- all'interno della cartella "lib" è fornito un file .py da impiegare come libreria di collegamento con l'API
-- assicura la corretta formattazione dei dati, prima di inviare la richiesta stessa
+- all'interno della cartella "lib" sono presenti quattro sottocartelle: rust, python, javascript, bash
+- ognuna contiene al suo interno i file di libreria associati al linguaggio nominato nella cartella
 
 ## Client
 - il client HTTP fornisce servizi quali:
