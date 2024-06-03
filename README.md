@@ -72,6 +72,55 @@
     - in caso di errore, il parametro "status" è impostato su "error", e il campo "reason" descrive l'errore in oggetto
     - in caso di success, il parametro "status" equivale a "ok", e il campo "id" corrisponde all'identificatore del nuovo evento creato
 
+- ### `/api/delete-reservation/`
+  - è necessario impiegare il metodo POST, specificando i dati necessari come segue
+```json 
+{
+  "token" : token,
+  "reservation-id" : reservationID,
+  "payment-account" : paymentAccount [optional]
+} 
+```
+  - la chiamata API è atta a eliminare una prenotazione
+  - l'eliminazione è possibile solo da parte dell'utente che ha eseguito la prenotazione in primo luogo 
+  - è necessario specificare: il token utente, l'identificatore della prenotazione e opzionalmente un account bancario sul quale eseguire lo storno
+    - in caso di errore, il parametro "status" è impostato su "error", e il campo "reason" contiene la descrizione dell'errore
+    - in caso di successo, "status" contiene "ok", e "transfer-account" contiene l'account di pagamento su cui è stato eseguito lo storno
+
+- ### `/api/update-reservation/`
+  - è necessario impiegare il metodo POST, specificando i dati necessari come segue 
+```json 
+{
+  "token" : token,
+  "reservation-id" : reservationID,
+  "places" : places,
+  "payment-account" : paymentAccount,
+}
+```
+  - la chiamata API è atta a modificare una prenotazione esistente, cambiando il numero di posti prenotati
+    - nel caso in cui il nuovo numero sia minore del precedente, il profilo di pagamento fornito serve ad eseguire lo storno
+    - altrimenti, sarà il destinatario dell'addebito
+  - è necessario specificare: il token utente, l'identificatore della prenotazione, un account bancario, e il numero di posti desiderato
+    - in caso di errore, il parametro "status" è impostato su "error", e il campo "reason" contiene la descrizione dell'errore
+    - se il numero di posti richiesti è uguale a quello già presente, viene restituito uno "status" pari ad "alert", e il campo "problem" che spiega il problema incontrato
+    - in caso di successo, "status" contiene "ok", e "action" descrive l'azione eseguita
+
+- ### `/api/request-token/`
+  - è necessario impiegare il metodo POST, specificando i dati necessari come segue
+```json 
+{
+  "username" : username,
+  "password" : password
+}
+```
+  - la chiamata API è atta a richiedere un token associato al proprio profilo utente
+  - nel caso in cui l'utente non possieda un token, ne viene generato uno, e viene restituito un oggetto json 
+    con "status" pari a "ok", e "token" pari al token generato
+  - nel caso in cui l'utente possieda già un token, viene restituito un oggetto json con "status" pari ad "alert",
+    "token" pari al token associato all'utente, e "problem" che contiene la spiegazione dell'allerta
+  - se l'utente non esiste, o la combinazione di nome utente e password è errata, viene restituito un oggetto json contenente
+    "status" pari ad "error", e "reason" pari alla ragione dell'errore 
+
 ## Lib
 - all'interno della cartella "lib" è fornito un file .py da impiegare come libreria di collegamento con l'API
 - assicura la corretta formattazione dei dati, prima di inviare la richiesta stessa

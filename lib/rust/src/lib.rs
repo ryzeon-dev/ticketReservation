@@ -113,6 +113,20 @@ fn updateReservation<T: ToString>(token: T, reservationID: T, places: T, payment
     return rsjson::Json::fromString(result.text().unwrap());
 }
 
+fn requestToken<T: ToString>(username: T, password: T) -> Result<Json, String> {
+    let mut client = Client::new();
+    let mut request = client.post(format!("{}/api/request-token/", URL))
+        .form(
+        &[
+            ("username", username.to_string()),
+            ("password", password.to_string())
+        ]
+    );
+
+    let mut result = request.send().unwrap();
+    return rsjson::Json::fromString(result.text().unwrap());
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -51,3 +51,9 @@ def updateReservation(token, reservationID, places, paymentAccount):
         'places' : str(places),
         'payment-account' : str(paymentAccount)
     }).json()
+
+def requestToken(username, password):
+    return requests.post(f'{URL}/api/request-token/', {
+        'username' : str(username),
+        'password' : str(password)
+    }).json()
