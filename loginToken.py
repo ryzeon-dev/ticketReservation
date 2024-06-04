@@ -18,6 +18,7 @@ def createNewToken():
 def registerToken(token, user):
     db = DB()
     db.exec(f"insert into token (user, token) values ({user}, '{token}')")
+    db.commit()
     db.close()
 
 def checkToken(token):

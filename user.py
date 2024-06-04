@@ -7,8 +7,8 @@ def checkUser(uname, passwd, hashPasswd=False):
         passwd = sha256(passwd.encode()).hexdigest()
 
     query = f"select * from user where username='{uname}' and password='{passwd}';"
-    print(query)
     userData = dbExecAndFetch(query)
+    print(query)
 
     if userData:
         user = User.fromRow(userData[0])
@@ -26,12 +26,10 @@ def getUser(username):
         return User.fromRow(user[0])
 
 def registerUser(name, username, password):
-    hasing = sha256()
-    hasing.update(password.encode())
-    passwordHash = hasing.hexdigest()
+    passwordHash = sha256(password.encode()).hexdigest()
 
     db = DB()
-    db.exec(f"insert into user (name, username, password) values ('{name}', '{username}', '{passwordHash}');")
+    db.exec(f"insert into user (name, username, password, admin) values ('{name}', '{username}', '{passwordHash}', 0);")
     db.commit()
     db.close()
 

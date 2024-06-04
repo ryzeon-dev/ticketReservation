@@ -83,11 +83,7 @@ def login():
                     admin=user.admin, eventMessage=f'Event created with id "{id}"'
                 )
 
-        hashing = sha256()
-        hashing.update(password.encode())
-        passwdHash = hashing.hexdigest()
-
-        user = checkUser(username, passwdHash)
+        user = checkUser(username, password)
         if user is None:
             return render_template('login.html', register=True, error='Invalid credentials')
 
@@ -105,11 +101,8 @@ def admin():
         username = request.form['username']
         password =  request.form['password']
 
-        hashing = sha256()
-        hashing.update(password.encode())
-        passwdHash = hashing.hexdigest()
-
-        user = checkUser(username, passwdHash)
+        user = checkUser(username, password)
+        print(user)
         if user is None:
             return render_template('login.html', error='Invalid credentials')
 
