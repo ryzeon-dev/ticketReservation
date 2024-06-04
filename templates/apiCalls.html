@@ -33,15 +33,63 @@
         background-color: #138C74;
         text-decoration: underline;
     }
+
+    li {
+        color: #16A085;
+    }
 </style>
 
 <title>API Calls</title>
 
 <h3>/api/list-events/</h3>
+<ul>
+    <li>Method: POST && GET</li>
+</ul>
+
 <h3>/api/list-events/[fromDate]&[toDate]/</h3>
+<ul>
+    <li>Method: POST && GET</li>
+</ul>
+
 <h3>/api/new-reservation/</h3>
+<ul>
+    <li>Method: POST</li>
+    <li>Data Format: <br/><code>token=$token&event-id=$eventID&places=$places&payment-account=$paymentAccount</code></li>
+</ul>
+
 <h3>/api/check-reservation/</h3>
+<ul>
+    <li>Method: POST</li>
+    <li>Data Format: <br/><code>token=$token&reservation-id=$reservationID</code></li>
+</ul>
+
 <h3>/api/list-reservations/</h3>
+<ul>
+    <li>Method: POST</li>
+    <li>Data Format: <br/><code>token=$token</code></li>
+</ul>
+
 <h3>/api/create-event/</h3>
+<ul>
+    <li>Method: POST</li>
+    <li>Data Format: <br/><code>token=$token&title=$title&description=$description&places=$places&price=$price</code></li>
+</ul>
+
 <h3>/api/delete-reservation/</h3>
+<ul>
+    <li>Method: POST</li>
+    <li>Data Format: <br/><code>token=$token&reservation-id=$reservationID</code></li>
+</ul>
+
 <h3>/api/update-reservation/</h3>
+<ul>
+    <li>Method: POST</li>
+    <li>Data Format: <br/><code>token=$token&reservation-id=$resevationID&places=$places</code></li>
+    <li>Data Format: <br/><code>token=$token&reservation-id=$resevationID&places=$places&payment-account:$paymentAccount</code></li>
+</ul>
+
+<h3>/api/request-token/</h3>
+<ul>
+    <li>Method: POST</li>
+    <li>Data Format: <br/><code>username=$username&password=$password</code></li>
+</ul>

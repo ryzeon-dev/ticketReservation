@@ -32,6 +32,7 @@ def registerUser(name, username, password):
 
     db = DB()
     db.exec(f"insert into user (name, username, password) values ('{name}', '{username}', '{passwordHash}');")
+    db.commit()
     db.close()
 
 def getUserBy(id):

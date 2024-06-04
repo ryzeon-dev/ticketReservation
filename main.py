@@ -139,6 +139,8 @@ def admin():
 
             db = DB()
             db.exec(f'update user set admin={"FALSE" if user.admin else "TRUE"} where id={toggleAdmin};')
+
+            db.commit()
             db.close()
 
             return render_template(
