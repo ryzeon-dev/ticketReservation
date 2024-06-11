@@ -5,7 +5,8 @@ create table event (
     event_date TEXT,
     price FLOAT,
     places INTEGER,
-    places_left INTEGER
+    places_left INTEGER,
+    creator INT
 );
 
 create table user (
@@ -13,7 +14,7 @@ create table user (
     name TEXT,
     username TEXT,
     password TEXT,
-    admin BOOL
+    creator BOOL
 );
 
 create table token (

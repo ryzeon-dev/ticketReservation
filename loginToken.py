@@ -18,6 +18,7 @@ def createNewToken():
 def registerToken(token, user):
     db = DB()
     db.exec(f"insert into token (user, token) values ({user}, '{token}')")
+
     db.commit()
     db.close()
 
@@ -35,7 +36,6 @@ def tokenFor(userID):
 
     if tokenData:
         return tokenData[0][0]
-
 
 if __name__ == '__main__':
     createNewToken()

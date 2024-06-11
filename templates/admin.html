@@ -52,10 +52,10 @@
 <h3>Token: {{ token }}</h3>
 {% endif %}
 
-<h3>Toggle admin privileges</h3>
-<form name="toggle-admin" method="post">
+<h3>Toggle creator privilegies</h3>
+<form name="toggle-creator" method="post">
     <label for="userID">User ID:</label>
-    <input name="toggle-admin" id="userID" type="1234567890">
+    <input name="toggle-creator" id="userID" type="1234567890">
     <input type="hidden" name="username" value="{{ adminUsername }}" />
     <input type="hidden" name="password" value="{{ adminPassword }}" />
     <br/>
@@ -81,7 +81,7 @@
         <ul>
             <li>Name: {{ user.name }}</li>
             <li>Username: {{ user.username }}</li>
-            <li>Admin: {{ "true" if user.admin else "false" }}</li>
+            <li>Creator: {{ "true" if user.creator else "false" }}</li>
         </ul>
     </li>
 

@@ -16,7 +16,6 @@ insert into event (title, description, event_date, price, places, places_left) v
     200
 );
 
-
 insert into event (title, description, event_date, price, places, places_left) values (
     'Caramelle gommose: semplice dolcetto o microcip commestibili',
     'Importantissimo dibattito a cura del dottor C. Credo',

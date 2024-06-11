@@ -121,6 +121,21 @@
   - se l'utente non esiste, o la combinazione di nome utente e password è errata, viene restituito un oggetto json contenente
     "status" pari ad "error", e "reason" pari alla ragione dell'errore 
 
+- ### `/api/delete-event/`
+  - è necessario impiegare il metodo POST, specificando i dati necessari come segue
+```json 
+{
+  "token" : token,
+  "event-id" : eventID
+}
+```
+  - la chiamata api è atta a eliminare un evento 
+  - solo il creatore dell'evento lo può eliminare
+  - inoltre, un evento è eliminabile solo se nessuna prenotazione circa quell'evento è stata effettuata
+  - è necessario specificare il token dell'utente e l'identificatore dell'evento
+    - in caso di errore il campo "status" contiene error, e "reason" il motivo dell'errore
+    - in caso di successo il campo "status" contiene "ok"
+
 ## Lib
 - all'interno della cartella "lib" sono presenti quattro sottocartelle: rust, python, javascript, bash
 - ognuna contiene al suo interno i file di libreria associati al linguaggio nominato nella cartella

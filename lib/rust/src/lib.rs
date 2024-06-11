@@ -127,6 +127,20 @@ fn requestToken<T: ToString>(username: T, password: T) -> Result<Json, String> {
     return rsjson::Json::fromString(result.text().unwrap());
 }
 
+fn deleteEvent<T: ToString>(token: T, eventID: T) -> Result<Json, String> {
+    let mut client = Client::new();
+    let mut request = client.post(format!("{}/api/delete-event/", URL))
+        .form(
+        &[
+            ("token", token.to_string()),
+            ("event-id", eventID.to_string())
+        ]
+    );
+
+    let mut result = request.send().unwrap();
+    return rsjson::Json::fromString(result.text().unwrap());
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -35,3 +35,7 @@ function updateReservation {
 function requestToken {
     curl -X POST -d "username=${1}&password=${2}" "${URL}/api/request-token/"
 }
+
+function deleteEvent {
+    curl -X POST -d "token=${1}&event-id=${2}"
+}

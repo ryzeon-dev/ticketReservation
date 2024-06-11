@@ -27,6 +27,7 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
 
+
         try:
             askingForToken = request.form['ask-for-token']
         except:
@@ -39,11 +40,13 @@ def login():
             createEvent = None
 
         if askingForToken:
+            user = getUser(username)
+            reservations = getPrettyReservationsFor(user.id)
+
             token = createNewToken()
             user = getUser(username)
 
             registerToken(token, user.id)
-            reservations = getPrettyReservationsFor(user.id)
 
             return render_template(
                 'personalArea.html', id=user.id, name=user.name,
@@ -51,7 +54,9 @@ def login():
             )
 
         if createEvent:
-            username = request.form['username']
+            user = getUser(username)
+            reservations = getPrettyReservationsFor(user.id)
+
             title = request.form['title']
 
             description = request.form['description']
@@ -60,27 +65,28 @@ def login():
             places = request.form['places']
             date = request.form['date']
 
-            user = getUser(username)
-            reservations = getPrettyReservationsFor(user.id)
-
             if dbExecAndFetch(f"select * from event where title='{title}'"):
                 return render_template(
                     'personalArea.html', id=user.id, name=user.name,
                     username=user.username, token=tokenFor(user.id), reservations=reservations,
-                    admin=user.admin, eventMessage=f'Impossible to create event with title "{title}", it already exists'
+                    creator=user.creator, eventMessage=f'Impossible to create event with title "{title}", it already exists'
                 )
 
             else:
                 db = DB()
                 db.exec(
-                    f"insert into event (title, description, event_date, price, places, places_left) values ('{title}', '{description}', '{date}', {price}, {places}, {places})")
+                    f"insert into event (title, description, event_date, price, places, places_left) values ("
+                    f"'{title}', '{description}', '{date}', {price}, {places}, {places})"
+                )
+
+                db.commit()
                 id = db.exec(f"select id from event where title='{title}' and event_date='{date}'")[0][0]
                 db.close()
 
                 return render_template(
                     'personalArea.html', id=user.id, name=user.name,
                     username=user.username, token=tokenFor(user.id), reservations=reservations,
-                    admin=user.admin, eventMessage=f'Event created with id "{id}"'
+                    creator=user.creator, eventMessage=f'Event created with id "{id}"'
                 )
 
         user = checkUser(username, password)
@@ -92,7 +98,7 @@ def login():
 
             return render_template(
                 'personalArea.html', id=user.id, name=user.name,
-                username=user.username, token=tokenFor(user.id), reservations=reservations, admin=user.admin
+                username=user.username, token=tokenFor(user.id), reservations=reservations, creator=user.creator
             )
 
 @app.route('/admin/', methods=['GET', 'POST'])
@@ -102,20 +108,22 @@ def admin():
         password =  request.form['password']
 
         user = checkUser(username, password)
-        print(user)
+
         if user is None:
             return render_template('login.html', error='Invalid credentials')
 
-        if user.username != 'master' and not user.admin:
+        if user.username != 'master':
             return render_template('login.html', error='access denied, unauthorized user')
 
         try:
             listUsersRequest = request.form['list-users']
+
         except:
             listUsersRequest = None
 
         if listUsersRequest:
             users = listUsers()
+
             return render_template(
                 'admin.html', id=user.id, name=user.name,
                 username=user.username, token=tokenFor(user.id), users=users,
@@ -123,15 +131,16 @@ def admin():
             )
 
         try:
-            toggleAdmin = request.form['toggle-admin']
-        except:
-            toggleAdmin = None
+            toggleCreator = request.form['toggle-creator']
 
-        if toggleAdmin:
-            user = getUserBy(toggleAdmin)
+        except:
+            toggleCreator = None
+
+        if toggleCreator:
+            user = getUserBy(toggleCreator)
 
             db = DB()
-            db.exec(f'update user set admin={"FALSE" if user.admin else "TRUE"} where id={toggleAdmin};')
+            db.exec(f'update user set creator={"FALSE" if user.creator else "TRUE"} where id={toggleCreator};')
 
             db.commit()
             db.close()
@@ -336,47 +345,6 @@ def listReservationsAPI():
         ]
     }
 
-@app.route('/api/create-event/', methods=['POST'])
-def createEventAPI():
-    token = request.form['token']
-    user = checkToken(token)
-    if user is None:
-        return {
-            'status': 'error',
-            'reason': 'no user associated to token'
-        }
-
-    if not user.admin:
-        return {
-            'status': 'error',
-            'reason': 'user has not the privilegies to create an event'
-        }
-
-    title = request.form['title']
-    description = request.form['description']
-    price = request.form['price']
-
-    date = request.form['date']
-    places = request.form['places']
-
-    if dbExecAndFetch(f"select * from event where title='{title}'"):
-        return {
-            'status' : 'error',
-            'reason' : f'event with title "{title}" already exist'
-        }
-
-    db = DB()
-    db.exec(f"insert into event (title, description, event_date, price, places, places_left) values ('{title}', '{description}', '{date}', {price}, {places}, {places})")
-    id = db.exec(f"select id from event where title='{title}' and event_date='{date}'")[0][0]
-
-    db.commit()
-    db.close()
-
-    return {
-        'status' : 'ok',
-        'event-id' : id
-    }
-
 @app.route('/api/delete-reservation/', methods=['POST'])
 def deleteReservation():
     token = request.form['token']
@@ -414,13 +382,13 @@ def deleteReservation():
 
     paymentAccount = request.form['payment-account']
     if not paymentAccount:
-        paymentAccount = dbExecAndFetch(f'select account from payment where reservation={reservationID};')
+        paymentAccount = dbExecAndFetch(f'select account from payment where reservation={reservationID};')[0][-1]
 
     db = DB()
     db.exec(f"delete from reservation where id={reservationID};")
 
     db.exec(f"delete from payment where reservation={reservationID};")
-    db.exec(f"update event set places_left={event.placesLeft + reservation.places};")
+    db.exec(f"update event set places_left={event.placesLeft + reservation.places} where id={event.id};")
 
     db.commit()
     db.close()
@@ -466,7 +434,7 @@ def updateReservation():
     event = checkEvent(reservation.event)
 
     paymentAccount = request.form['payment-account']
-    alreadyPaid = int(dbExecAndFetch(f'select price from payment where id={reservationID}')[0][0])
+    alreadyPaid = int(dbExecAndFetch(f'select price from payment where reservation={reservationID}')[0][0])
 
     transaction = - (alreadyPaid - places * event.price)
     placesDelta = reservation.places - places
@@ -511,6 +479,97 @@ def requestToken():
     return {
         "status" : "ok",
         "token" : user.token
+    }
+
+@app.route('/api/create-event/', methods=['POST'])
+def createEventAPI():
+    token = request.form['token']
+    user = checkToken(token)
+    if user is None:
+        return {
+            'status': 'error',
+            'reason': 'no user associated to token'
+        }
+
+    if not user.creator:
+        return {
+            'status': 'error',
+            'reason': 'user has not the privilegies to create an event'
+        }
+
+    title = request.form['title']
+    description = request.form['description']
+    price = request.form['price']
+
+    date = request.form['date']
+    places = request.form['places']
+
+    if dbExecAndFetch(f"select * from event where title='{title}'"):
+        return {
+            'status' : 'error',
+            'reason' : f'event with title "{title}" already exist'
+        }
+
+    db = DB()
+    db.exec(
+        f"insert into event (title, description, event_date, price, places, places_left, creator) values "
+        f"('{title}', '{description}', '{date}', {price}, {places}, {places}, {user.id})"
+    )
+    id = db.exec(f"select id from event where title='{title}' and event_date='{date}'")[0][0]
+
+    db.commit()
+    db.close()
+
+    return {
+        'status' : 'ok',
+        'event-id' : id
+    }
+
+@app.route('/api/delete-event', methods=['POST'])
+def deleteEvent():
+    token = request.form['token']
+    eventID = request.form['event-id']
+
+    user = checkToken(token)
+    if not user:
+        return {
+            'status' : 'error',
+            'reason' : 'token is not associated to any user'
+        }
+
+    event = checkEvent(eventID)
+    if not event:
+        return {
+            'status' : 'error',
+            'reason' : 'event does not exist'
+        }
+
+    if event.creator != user.id:
+        return {
+            'status' : 'error',
+            'reason' : 'user associated with token is not allowed to delete this event'
+        }
+
+    elif not user.creator:
+        return {
+            'status' : 'error',
+            'reason' : 'user associated with token is not allowed to delete any event (missing creator privileges)'
+        }
+
+    elif event.places < event.placesLeft:
+        return {
+            'status' : 'error',
+            'reason' : 'impossible to delete an event for which reservations have already been made'
+        }
+
+    db = DB()
+    db.exec(f'delete from event where id={event.id}')
+
+    db.commit()
+    db.close()
+
+    return {
+        'status' : 'ok'
     }
 
 if __name__ == '__main__':

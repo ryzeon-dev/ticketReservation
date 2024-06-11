@@ -28,6 +28,7 @@ class Event:
     date: Date
     places: int
     placesLeft: int
+    creator: int
 
     @staticmethod
     def fromRow(row):
@@ -38,7 +39,8 @@ class Event:
             price=row[4],
             date=Date.fromString(row[3]),
             places=row[5],
-            placesLeft=row[6]
+            placesLeft=row[6],
+            creator=row[7]
         )
 
     def toJson(self):
@@ -80,7 +82,7 @@ class User:
     name: str
     username: str
     password: str
-    admin: bool
+    creator: bool
     reservations: list = dataclasses.field(default_factory=lambda: [])
     token: str = None
 
@@ -91,7 +93,7 @@ class User:
             name=row[1],
             username=row[2],
             password=row[3],
-            admin=row[4]
+            creator=row[4]
         )
 
     def setToken(self, token):

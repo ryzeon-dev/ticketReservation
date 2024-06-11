@@ -1,0 +1,120 @@
+events = {
+    "events": [
+        {
+            "date": "3/2/2025",
+            "description": "Festival internazionale del trombone. Intervento speciale di Franco Tiratore",
+            "id": 1,
+            "places": 150,
+            "places-left": 150,
+            "price": 12.0,
+            "title": "Festival del trombone"
+        },
+        {
+            "date": "6/2/2025",
+            "description": "Nuova proiezione del film Interstellar con colonne sonore dal vivo a cura della orchestra sinfonica Danese",
+            "id": 2,
+            "places": 200,
+            "places-left": 200,
+            "price": 25.0,
+            "title": "Proiezione cinematografica di Interstellar, con orchestra"
+        },
+        {
+            "date": "12/2/2025",
+            "description": "Importantissimo dibattito a cura del dottor C. Credo",
+            "id": 3,
+            "places": 20,
+            "places-left": 20,
+            "price": 8.0,
+            "title": "Caramelle gommose: semplice dolcetto o microcip commestibili"
+        }
+    ],
+    "status": "ok"
+}
+
+reservation = {'reservation-id': 1, 'status': 'ok'}
+
+checkReservation = {
+    "reservation": {
+        "event": {
+            "date": "3/2/2025",
+            "description": "Festival internazionale del trombone. Intervento speciale di Franco Tiratore",
+            "id": 1,
+            "places": 150,
+            "places-left": 142,
+            "price": 12.0,
+            "title": "Festival del trombone"
+        },
+        "id": 1,
+        "payment_account": "1234567890123456",
+        "places": 8,
+        "user": {
+            "id": 7,
+            "name": "Test User",
+            "username": "test"
+        }
+    },
+    "status": "ok"
+}
+
+lib.listReservations(token=apiToken) = {'reservations': [1], 'user-id': 7}
+
+lib.updateReservation(
+    token=apiToken,
+    reservationID=reservationID,
+    places=5,
+    paymentAccount="2345678901234567"
+) = {'action': 'reservation places changed. The transaction will have place on the provided bank account', 'status': 'ok'}
+
+lib.deleteReservation(
+    token=apiToken,
+    reservationID=reservationID
+) = {'status': 'ok', 'transfer-account': '1234567890123456'}
+
+createdEvent = {'event-id': 4, 'status': 'ok'}
+
+events = {
+    "events": [
+        {
+            "date": "3/2/2025",
+            "description": "Festival internazionale del trombone. Intervento speciale di Franco Tiratore",
+            "id": 1,
+            "places": 150,
+            "places-left": 150,
+            "price": 12.0,
+            "title": "Festival del trombone"
+        },
+        {
+            "date": "6/2/2025",
+            "description": "Nuova proiezione del film Interstellar con colonne sonore dal vivo a cura della orchestra sinfonica Danese",
+            "id": 2,
+            "places": 200,
+            "places-left": 200,
+            "price": 25.0,
+            "title": "Proiezione cinematografica di Interstellar, con orchestra"
+        },
+        {
+            "date": "12/2/2025",
+            "description": "Importantissimo dibattito a cura del dottor C. Credo",
+            "id": 3,
+            "places": 20,
+            "places-left": 20,
+            "price": 8.0,
+            "title": "Caramelle gommose: semplice dolcetto o microcip commestibili"
+        },
+        {
+            "date": "30/8/2024",
+            "description": "Event created during API testing",
+            "id": 4,
+            "places": 50,
+            "places-left": 50,
+            "price": 15.0,
+            "title": "Test Event"
+        }
+    ],
+    "status": "ok"
+}
+
+lib.deleteEvent(
+    token=apiToken,
+    eventID=createdEventID
+) = {'status': 'ok'}
