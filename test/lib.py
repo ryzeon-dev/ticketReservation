@@ -52,12 +52,6 @@ def updateReservation(token, reservationID, places, paymentAccount):
         'payment-account' : str(paymentAccount)
     }).json()
 
-def requestToken(username, password):
-    return requests.post(f'{URL}/api/request-token/', {
-        'username' : str(username),
-        'password' : str(password)
-    }).json()
-
 def deleteEvent(token, eventID):
     return requests.post(f'{URL}/api/delete-event', {
         'token' : str(token),

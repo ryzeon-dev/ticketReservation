@@ -2,8 +2,7 @@
 
 # Ticket Reservation
 ## API
-- all API requests (except for listing events) require a valid token, which can only be obtained by the client website
-
+- tuttel le richieste API (eccetto la visualizzazione degli eventi) richiede il possesso di un token di autenticazione, che può essere ottenuto unicamente tramite il sito client 
 
 - ### `/api/list-events/` | `/api/list-events/from-date&to-date/`
   - possono essere usati sia il metodo GET che il metodo POST
@@ -104,22 +103,6 @@
     - in caso di errore, il parametro "status" è impostato su "error", e il campo "reason" contiene la descrizione dell'errore
     - se il numero di posti richiesti è uguale a quello già presente, viene restituito uno "status" pari ad "alert", e il campo "problem" che spiega il problema incontrato
     - in caso di successo, "status" contiene "ok", e "action" descrive l'azione eseguita
-
-- ### `/api/request-token/`
-  - è necessario impiegare il metodo POST, specificando i dati necessari come segue
-```json 
-{
-  "username" : username,
-  "password" : password
-}
-```
-  - la chiamata API è atta a richiedere un token associato al proprio profilo utente
-  - nel caso in cui l'utente non possieda un token, ne viene generato uno, e viene restituito un oggetto json 
-    con "status" pari a "ok", e "token" pari al token generato
-  - nel caso in cui l'utente possieda già un token, viene restituito un oggetto json con "status" pari ad "alert",
-    "token" pari al token associato all'utente, e "problem" che contiene la spiegazione dell'allerta
-  - se l'utente non esiste, o la combinazione di nome utente e password è errata, viene restituito un oggetto json contenente
-    "status" pari ad "error", e "reason" pari alla ragione dell'errore 
 
 - ### `/api/delete-event/`
   - è necessario impiegare il metodo POST, specificando i dati necessari come segue

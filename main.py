@@ -453,34 +453,6 @@ def updateReservation():
         'action' : 'reservation places changed. The transaction will have place on the provided bank account'
     }
 
-@app.route('/api/request-token/', methods=['POST'])
-def requestToken():
-    username = request.form['username']
-    password = request.form['password']
-
-    user = checkUser(username, password)
-
-    if user is None:
-        return {
-            "status" : "error",
-            "reason" : "user does not exist"
-        }
-
-    if user.token:
-        return {
-            "status" : "alert",
-            "problem" : "token already assigned to user",
-            "token" : user.token
-        }
-
-    token = createNewToken()
-    registerToken(token, user.id)
-
-    return {
-        "status" : "ok",
-        "token" : user.token
-    }
-
 @app.route('/api/create-event/', methods=['POST'])
 def createEventAPI():
     token = request.form['token']
